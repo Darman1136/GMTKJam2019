@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "Playback/PlaybackObject.h"
+#include "Playback/PlaybackCharacter.h"
+#include "GMTK2019GameInstance.h"
 #include "GMTK2019Character.generated.h"
 
 class UTextRenderComponent;
@@ -85,15 +87,11 @@ private:
 
 	void ToggleRecord();
 
-	void TogglePlayback();
-
-	void StartPlayback();
-
-	void UpdatePlayback();
-
-	void UpdatePlaybackLerp();
+	void SpawnPlaybackCharacter();
 
 private:
+	UGMTK2019GameInstance* TheGameInstance;
+
 	EAnimationState CurrentAnimationState = EAnimationState::Anim_Stand;
 
 	bool bIsAnimationDoneToggle = false;
@@ -110,16 +108,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		float RecordPlayerDelay = 100;
 
-	float CurrentPlaybackMillis = 0;
-
-	bool bIsPlaybackRunning = false;
-
 	bool bIsRecording = false;
 
-	int32 PlaybackIndex = 0;
-
-	FTransform CurrentPlaybackGoal;
-	FTransform CurrentPlaybackStart;
-	float CurrentPlaybackStartRelativeTimeToNextUpdate;
-	float CurrentPlaybackGoalRelativeTimeToNextUpdate;
+	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
 };

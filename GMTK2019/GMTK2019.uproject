@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"CoreUObject",
-				"Paper2D"
+				"Paper2D",
+				"Engine"
 			]
 		}
 	],
