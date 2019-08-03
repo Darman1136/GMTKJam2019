@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
 #include "Playback/PlaybackObject.h"
+#include "GMTK2019Enums.h"
 #include "PlaybackCharacter.generated.h"
 
 /**
@@ -30,6 +31,16 @@ public:
 	void UpdatePlaybackLerp();
 
 private:
+	void UpdateAnimation();
+
+	void UpdateAnimationToState(EAnimationState DesiredAnimationState);
+
+private:
+	EAnimationState CurrentAnimationState = EAnimationState::Anim_Stand;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+		TMap<EAnimationState, class UPaperFlipbook*> AnimationFlipbookMap;
+
 	TArray<FPlaybackTransformStruct> PlayerPlaybackTransform;
 
 	float CurrentPlaybackMillis = 0;
@@ -42,4 +53,6 @@ private:
 	FTransform CurrentPlaybackStart;
 	float CurrentPlaybackStartRelativeTimeToNextUpdate;
 	float CurrentPlaybackGoalRelativeTimeToNextUpdate;
+
+	bool bIsMoving = false;
 };
