@@ -80,9 +80,9 @@ AGMTK2019Character::AGMTK2019Character() {
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> PbCharBlueprint(TEXT("Blueprint'/Game/2DSideScrollerCPP/Blueprints/Playback/PlaybackCharacterBP.PlaybackCharacterBP'"));
+	static ConstructorHelpers::FObjectFinder<UClass> PbCharBlueprint(TEXT("Class'/Game/2DSideScrollerCPP/Blueprints/Playback/PlaybackCharacterBP.PlaybackCharacterBP_C'"));
 	if (PbCharBlueprint.Object) {
-		PlaybackCharacterBP = (UClass*)PbCharBlueprint.Object->GeneratedClass;
+		PlaybackCharacterBP = PbCharBlueprint.Object;
 	}
 }
 

@@ -8,9 +8,9 @@ AGMTK2019GameMode::AGMTK2019GameMode() {
 	// Set default pawn class to our character
 	DefaultPawnClass = AGMTK2019Character::StaticClass();
 
-	static ConstructorHelpers::FObjectFinder<UBlueprint> HUDBP(TEXT("Blueprint'/Game/2DSideScrollerCPP/Blueprints/HUD/GMTK2019HUDBP.GMTK2019HUDBP'"));
+	static ConstructorHelpers::FObjectFinder<UClass> HUDBP(TEXT("Class'/Game/2DSideScrollerCPP/Blueprints/HUD/GMTK2019HUDBP.GMTK2019HUDBP_C'"));
 	if (HUDBP.Object) {
-		HUDClass = (UClass*)HUDBP.Object->GeneratedClass;
+		HUDClass = HUDBP.Object;
 	} else {
 		HUDClass = AGMTK2019HUD::StaticClass();
 	}
