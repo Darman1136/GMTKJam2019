@@ -3,6 +3,7 @@
 
 #include "PlaybackCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "Runtime/Engine/Classes/GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(PlaybackCharacterLog, Log, All);
 
@@ -21,10 +22,12 @@ void APlaybackCharacter::Tick(float DeltaSeconds) {
 }
 
 void APlaybackCharacter::UpdateAnimation() {
-	const FVector PlayerVelocity = GetVelocity();
-	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+	if (bIsMovingRight) {
+		GetSprite()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	} else {
+		GetSprite()->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	}
 
-	// Are we moving or standing still?
 	EAnimationState DesiredAnimationState = bIsMoving ? EAnimationState::Anim_Run : EAnimationState::Anim_Stand;
 	if (CurrentAnimationState != DesiredAnimationState) {
 		UpdateAnimationToState(DesiredAnimationState);
@@ -97,6 +100,9 @@ void APlaybackCharacter::UpdatePlaybackLerp() {
 	if (NextTransform.IsValid()) {
 		FVector MovementVector = GetActorTransform().GetLocation() - NewLocation;
 		bIsMoving = MovementVector.SizeSquared() > 0.1f;
+		if (FMath::Abs(MovementVector.X) > 0.1f) {
+			bIsMovingRight = MovementVector.X < 0.f;
+		}
 		SetActorTransform(NextTransform);
 	}
 }
