@@ -21,6 +21,8 @@ enum class EAnimationState : uint8 {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnimationFinishDelegate, EAnimationState, AnimationState);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerPressUse);
+
 /**
  * This class is the default character for GMTK2019, and it is responsible for all
  * physical interaction between the player and the world.
@@ -75,6 +77,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Animation")
 		FAnimationFinishDelegate AnimationDelegate_OnFinish;
 
+	UPROPERTY(BlueprintAssignable, Category = "Player|Input")
+		FPlayerPressUse PlayerPressUseDelegate_OnPress;
 
 private:
 	void AnimationDone();
@@ -88,6 +92,10 @@ private:
 	void ToggleRecord();
 
 	void SpawnPlaybackCharacter();
+
+	void Use();
+
+	void ResetLevel();
 
 private:
 	UGMTK2019GameInstance* TheGameInstance;

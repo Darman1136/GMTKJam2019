@@ -13,6 +13,7 @@
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -179,6 +180,22 @@ void AGMTK2019Character::SpawnPlaybackCharacter() {
 }
 
 
+void AGMTK2019Character::Use() {
+	if (GetMovementComponent()->IsFalling()) {
+		UE_LOG(SideScrollerCharacter, Log, TEXT("Cant 'use' while in the air"));
+		return;
+	}
+	if (PlayerPressUseDelegate_OnPress.IsBound()) {
+		PlayerPressUseDelegate_OnPress.Broadcast();
+	}
+}
+
+void AGMTK2019Character::ResetLevel() {
+	FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UE_LOG(SideScrollerCharacter, Log, TEXT("Reset %s"), *LevelName);
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*LevelName));
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -189,6 +206,8 @@ void AGMTK2019Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGMTK2019Character::MoveRight);
 	PlayerInputComponent->BindAction("TogglePlayback", IE_Pressed, this, &AGMTK2019Character::SpawnPlaybackCharacter);
 	PlayerInputComponent->BindAction("ToggleRecord", IE_Pressed, this, &AGMTK2019Character::ToggleRecord);
+	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AGMTK2019Character::Use);
+	PlayerInputComponent->BindAction("Reset", IE_Pressed, this, &AGMTK2019Character::ResetLevel);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGMTK2019Character::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AGMTK2019Character::TouchStopped);
