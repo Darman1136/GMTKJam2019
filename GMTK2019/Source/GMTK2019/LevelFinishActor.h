@@ -8,6 +8,8 @@
 #include "LevelInfoActor.h"
 #include "LevelFinishActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLevelReadyToFinish, bool, IsReady);
+
 /**
  *
  */
@@ -28,6 +30,10 @@ public:
 
 	UFUNCTION()
 		void DoActionWhenPlayerOverlaps();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Level")
+	FLevelReadyToFinish LevelReadyToFinish_OnChange;
 
 private:
 	void Load(FName LevelName);
