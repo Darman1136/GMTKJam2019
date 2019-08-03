@@ -129,4 +129,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		UMusicAudioComponent* MusicAudioComponent;
+
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* StepAudioComponent;
 };
