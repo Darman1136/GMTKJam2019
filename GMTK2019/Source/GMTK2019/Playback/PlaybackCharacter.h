@@ -55,4 +55,5 @@ private:
 	float CurrentPlaybackGoalRelativeTimeToNextUpdate;
 
 	bool bIsMoving = false;
+	bool bIsMovingRight = true;
 };
