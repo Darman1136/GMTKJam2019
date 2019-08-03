@@ -2,6 +2,7 @@
 
 
 #include "PlaybackCharacter.h"
+#include "PaperFlipbookComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(PlaybackCharacterLog, Log, All);
 
@@ -13,9 +14,28 @@ void APlaybackCharacter::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	CurrentPlaybackMillis += DeltaSeconds;
 
-	// UpdateCharacter();
 	if (PlayerPlaybackTransform.Num() > 0) {
 		UpdatePlayback();
+	}
+	UpdateAnimation();
+}
+
+void APlaybackCharacter::UpdateAnimation() {
+	const FVector PlayerVelocity = GetVelocity();
+	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+
+	// Are we moving or standing still?
+	EAnimationState DesiredAnimationState = bIsMoving ? EAnimationState::Anim_Run : EAnimationState::Anim_Stand;
+	if (CurrentAnimationState != DesiredAnimationState) {
+		UpdateAnimationToState(DesiredAnimationState);
+	}
+}
+
+void APlaybackCharacter::UpdateAnimationToState(EAnimationState DesiredAnimationState) {
+	CurrentAnimationState = DesiredAnimationState;
+	UPaperFlipbook* DesiredAnimation = AnimationFlipbookMap.FindRef(DesiredAnimationState);
+	if (DesiredAnimation) {
+		GetSprite()->SetFlipbook(DesiredAnimation);
 	}
 }
 
@@ -62,6 +82,7 @@ void APlaybackCharacter::UpdatePlayback() {
 	} else {
 		UE_LOG(PlaybackCharacterLog, Warning, TEXT("playback done"));
 		bIsPlaybackRunning = false;
+		bIsMoving = false;
 	}
 }
 
@@ -71,13 +92,11 @@ void APlaybackCharacter::UpdatePlaybackLerp() {
 	float LerpStart = CurrentPlaybackMillis - CurrentPlaybackStartRelativeTimeToNextUpdate;
 	float LerpEnd = CurrentPlaybackGoalRelativeTimeToNextUpdate - CurrentPlaybackStartRelativeTimeToNextUpdate;
 
-	UE_LOG(PlaybackCharacterLog, Warning, TEXT("start %f"), LerpStart);
-	UE_LOG(PlaybackCharacterLog, Warning, TEXT("end %f ms"), LerpEnd);
-
 	FVector NewLocation = FMath::Lerp(CurrentPlaybackStart.GetLocation(), CurrentPlaybackGoal.GetLocation(), LerpStart / LerpEnd);
 	NextTransform.SetLocation(NewLocation);
-	UE_LOG(PlaybackCharacterLog, Warning, TEXT("MyCharacter's Location is %s"), *NextTransform.GetLocation().ToString());
 	if (NextTransform.IsValid()) {
+		FVector MovementVector = GetActorTransform().GetLocation() - NewLocation;
+		bIsMoving = MovementVector.SizeSquared() > 0.1f;
 		SetActorTransform(NextTransform);
 	}
 }

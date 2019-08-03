@@ -8,17 +8,10 @@
 #include "Playback/PlaybackCharacter.h"
 #include "GMTK2019GameInstance.h"
 #include "LevelInfoActor.h"
+#include "GMTK2019Enums.h"
 #include "GMTK2019Character.generated.h"
 
 class UTextRenderComponent;
-
-
-
-UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class EAnimationState : uint8 {
-	Anim_Stand,
-	Anim_Run
-};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnimationFinishDelegate, EAnimationState, AnimationState);
 
