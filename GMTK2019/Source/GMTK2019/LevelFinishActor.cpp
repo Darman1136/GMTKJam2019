@@ -42,7 +42,10 @@ void ALevelFinishActor::DoActionWhenPlayerOverlaps() {
 			return;
 	}
 	if (bIsPlayerOverlapping) {
-		UE_LOG(LevelFinishActorLog, Log, TEXT("DoActionWhenPlayerOverlaps"));
-		UGameplayStatics::OpenLevel(GetWorld(), "Level2");
+		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
+			Cast<AGMTK2019Character>(PlayerCharacter)->ToggleRecord();
+		}
+		UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
 	}
 }

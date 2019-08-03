@@ -123,6 +123,8 @@ void AGMTK2019Character::UpdateAnimationToState(EAnimationState DesiredAnimation
 void AGMTK2019Character::BeginPlay() {
 	Super::BeginPlay();
 	TheGameInstance = Cast<UGMTK2019GameInstance>(GetGameInstance());
+	TheGameInstance->SpawnPlaybacks();
+	ToggleRecord();
 }
 
 void AGMTK2019Character::Tick(float DeltaSeconds) {
@@ -161,7 +163,7 @@ void AGMTK2019Character::ToggleRecord() {
 		GetWorld()->GetTimerManager().ClearTimer(RecordPlayerTimerHandle);
 		RecordPlayer();
 		if (TheGameInstance) {
-			TheGameInstance->AddToPlaybackMap(0, PlayerRecordingTransform);
+			TheGameInstance->AddToPlaybackMap(PlayerRecordingTransform);
 		}
 	}
 }
