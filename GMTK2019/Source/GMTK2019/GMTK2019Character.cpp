@@ -198,6 +198,12 @@ void AGMTK2019Character::ResetLevel() {
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*LevelName));
 }
 
+void AGMTK2019Character::PreviousLevel() {
+	if (PlayerPressPreviousLevelDelegate_OnPress.IsBound()) {
+		PlayerPressPreviousLevelDelegate_OnPress.Broadcast();
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -210,6 +216,7 @@ void AGMTK2019Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("ToggleRecord", IE_Pressed, this, &AGMTK2019Character::ToggleRecord);
 	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AGMTK2019Character::Use);
 	PlayerInputComponent->BindAction("Reset", IE_Pressed, this, &AGMTK2019Character::ResetLevel);
+	PlayerInputComponent->BindAction("PreviousLevel", IE_Pressed, this, &AGMTK2019Character::PreviousLevel);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGMTK2019Character::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AGMTK2019Character::TouchStopped);

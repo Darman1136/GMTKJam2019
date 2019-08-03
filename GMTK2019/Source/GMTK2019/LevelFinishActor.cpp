@@ -20,7 +20,9 @@ void ALevelFinishActor::BeginPlay() {
 
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
-		Cast< AGMTK2019Character>(PlayerCharacter)->PlayerPressUseDelegate_OnPress.AddDynamic(this, &ALevelFinishActor::DoActionWhenPlayerOverlaps);
+		AGMTK2019Character* TheCharacter = Cast< AGMTK2019Character>(PlayerCharacter);
+		TheCharacter->PlayerPressUseDelegate_OnPress.AddDynamic(this, &ALevelFinishActor::DoActionWhenPlayerOverlaps);
+		TheCharacter->PlayerPressPreviousLevelDelegate_OnPress.AddDynamic(this, &ALevelFinishActor::LoadPreviousLevel);
 	}
 }
 
@@ -37,15 +39,23 @@ void ALevelFinishActor::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor
 }
 
 void ALevelFinishActor::DoActionWhenPlayerOverlaps() {
-	if (NextLevelName == NAME_None) {
-		UE_LOG(LevelFinishActorLog, Log, TEXT("NEXT LEVEL NAME NOT SET"))
-			return;
-	}
 	if (bIsPlayerOverlapping) {
-		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-		if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
-			Cast<AGMTK2019Character>(PlayerCharacter)->ToggleRecord();
-		}
-		UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
+		Load(NextLevelName);
 	}
+}
+
+void ALevelFinishActor::LoadPreviousLevel() {
+	Load(PreviousLevelName);
+}
+
+void ALevelFinishActor::Load(FName LevelName) {
+	if (LevelName == NAME_None) {
+		UE_LOG(LevelFinishActorLog, Log, TEXT("LEVEL NAME NOT SET"));
+		return;
+	}
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
+		Cast<AGMTK2019Character>(PlayerCharacter)->ToggleRecord();
+	}
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }

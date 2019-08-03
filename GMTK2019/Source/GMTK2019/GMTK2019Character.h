@@ -23,6 +23,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnimationFinishDelegate, EAnimation
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerPressUse);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerPressPreviousLevel);
+
 /**
  * This class is the default character for GMTK2019, and it is responsible for all
  * physical interaction between the player and the world.
@@ -82,6 +84,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Player|Input")
 		FPlayerPressUse PlayerPressUseDelegate_OnPress;
 
+	UPROPERTY(BlueprintAssignable, Category = "Player|Input")
+		FPlayerPressPreviousLevel PlayerPressPreviousLevelDelegate_OnPress;
+
 private:
 	void AnimationDone();
 
@@ -96,6 +101,8 @@ private:
 	void Use();
 
 	void ResetLevel();
+
+	void PreviousLevel();
 
 private:
 	UGMTK2019GameInstance* TheGameInstance;
