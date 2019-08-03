@@ -4,6 +4,7 @@
 #include "LevelFinishActor.h"
 #include "GMTK2019Character.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "LevelInfoActor.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LevelFinishActorLog, Log, All);
 
@@ -15,6 +16,11 @@ ALevelFinishActor::ALevelFinishActor() : Super() {
 
 void ALevelFinishActor::BeginPlay() {
 	Super::BeginPlay();
+
+	TArray<AActor*> LevelInfoActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelInfoActor::StaticClass(), LevelInfoActors);
+	LevelInfo = Cast<ALevelInfoActor>(LevelInfoActors[0]);
+
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ALevelFinishActor::OnBeginOverlap);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ALevelFinishActor::OnEndOverlap);
 
@@ -22,7 +28,6 @@ void ALevelFinishActor::BeginPlay() {
 	if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
 		AGMTK2019Character* TheCharacter = Cast< AGMTK2019Character>(PlayerCharacter);
 		TheCharacter->PlayerPressUseDelegate_OnPress.AddDynamic(this, &ALevelFinishActor::DoActionWhenPlayerOverlaps);
-		TheCharacter->PlayerPressPreviousLevelDelegate_OnPress.AddDynamic(this, &ALevelFinishActor::LoadPreviousLevel);
 	}
 }
 
@@ -40,12 +45,8 @@ void ALevelFinishActor::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor
 
 void ALevelFinishActor::DoActionWhenPlayerOverlaps() {
 	if (bIsPlayerOverlapping) {
-		Load(NextLevelName);
+		Load(LevelInfo->GetNextLevelName());
 	}
-}
-
-void ALevelFinishActor::LoadPreviousLevel() {
-	Load(PreviousLevelName);
 }
 
 void ALevelFinishActor::Load(FName LevelName) {

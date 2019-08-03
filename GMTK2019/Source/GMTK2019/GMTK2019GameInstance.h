@@ -25,7 +25,8 @@ public:
 
 	void RemoveEntryFromPlaybackMap(int32 index);
 
-	void ClearPlaybackMap();
+	UFUNCTION(BlueprintCallable)
+		void ClearPlaybackMap();
 
 	void SpawnPlaybacks();
 
