@@ -30,6 +30,12 @@ public:
 
 	void SpawnPlaybacks();
 
+	UFUNCTION(BlueprintCallable)
+		void MusicStarted();
+
+	UFUNCTION(BlueprintPure)
+		bool HasMusicStarted();
+
 private:
 	void Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybackTransform);
 
@@ -37,4 +43,6 @@ private:
 	TMap<int32, TArray<FPlaybackTransformStruct>> PlaybackMap;
 
 	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
+
+	bool bMusicStarted = false;
 };

@@ -9,6 +9,7 @@
 #include "GMTK2019GameInstance.h"
 #include "LevelInfoActor.h"
 #include "GMTK2019Enums.h"
+#include "Audio/MusicAudioComponent.h"
 #include "GMTK2019Character.generated.h"
 
 class UTextRenderComponent;
@@ -72,6 +73,9 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BlueprintCallable)
+		FORCEINLINE class UMusicAudioComponent* GetMusicAudioComponent() const { return MusicAudioComponent; }
+
 	UPROPERTY(BlueprintAssignable, Category = "Animation")
 		FAnimationFinishDelegate AnimationDelegate_OnFinish;
 
@@ -122,4 +126,7 @@ private:
 	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
 
 	ALevelInfoActor* LevelInfo;
+
+	UPROPERTY(EditAnywhere)
+		UMusicAudioComponent* MusicAudioComponent;
 };
