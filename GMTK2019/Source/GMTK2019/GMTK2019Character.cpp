@@ -152,8 +152,8 @@ void AGMTK2019Character::ToggleRecord() {
 	if (bIsRecording) {
 		StartRecordingPlayer();
 	} else {
-		RecordPlayer();
 		GetWorld()->GetTimerManager().ClearTimer(RecordPlayerTimerHandle);
+		RecordPlayer();
 	}
 }
 
@@ -178,13 +178,38 @@ void AGMTK2019Character::UpdatePlayback() {
 	if (PlayerRecordingTransform.Num() > PlaybackIndex) {
 		FPlaybackTransformStruct PlaybackTransformStruct = PlayerRecordingTransform[PlaybackIndex];
 		if (PlaybackTransformStruct.RelativeMillisSincePlaybackStart < CurrentPlaybackMillis) {
-			SetActorTransform(PlaybackTransformStruct.ActorTransform);
+			if (PlayerRecordingTransform.Num() > PlaybackIndex + 1) {
+				CurrentPlaybackStartRelativeTimeToNextUpdate = PlaybackTransformStruct.RelativeMillisSincePlaybackStart;
+				CurrentPlaybackGoalRelativeTimeToNextUpdate = PlayerRecordingTransform[PlaybackIndex + 1].RelativeMillisSincePlaybackStart;
+				CurrentPlaybackStart = GetActorTransform();
+				CurrentPlaybackGoal = PlaybackTransformStruct.ActorTransform;
+			} else {
+				SetActorTransform(PlaybackTransformStruct.ActorTransform);
+			}
 			PlaybackIndex++;
+		}
+		if (PlaybackIndex > 0) {
+			UpdatePlaybackLerp();
 		}
 	} else {
 		UE_LOG(SideScrollerCharacter, Warning, TEXT("playback done"));
 		bIsPlaybackRunning = false;
 	}
+}
+
+void AGMTK2019Character::UpdatePlaybackLerp() {
+	FTransform NextTransform = CurrentPlaybackStart;
+
+	float LerpStart = CurrentPlaybackMillis - CurrentPlaybackStartRelativeTimeToNextUpdate;
+	float LerpEnd = CurrentPlaybackGoalRelativeTimeToNextUpdate - CurrentPlaybackStartRelativeTimeToNextUpdate;
+
+	UE_LOG(SideScrollerCharacter, Warning, TEXT("start %f"), LerpStart);
+	UE_LOG(SideScrollerCharacter, Warning, TEXT("end %f ms"), LerpEnd);
+
+	FVector NewLocation = FMath::Lerp(CurrentPlaybackStart.GetLocation(), CurrentPlaybackGoal.GetLocation(), LerpStart / LerpEnd);
+	NextTransform.SetLocation(NewLocation);
+	UE_LOG(SideScrollerCharacter, Warning, TEXT("MyCharacter's Location is %s"), *NextTransform.GetLocation().ToString());
+	SetActorTransform(NextTransform);
 }
 
 //////////////////////////////////////////////////////////////////////////

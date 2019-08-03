@@ -91,6 +91,8 @@ private:
 
 	void UpdatePlayback();
 
+	void UpdatePlaybackLerp();
+
 private:
 	EAnimationState CurrentAnimationState = EAnimationState::Anim_Stand;
 
@@ -115,4 +117,9 @@ private:
 	bool bIsRecording = false;
 
 	int32 PlaybackIndex = 0;
+
+	FTransform CurrentPlaybackGoal;
+	FTransform CurrentPlaybackStart;
+	float CurrentPlaybackStartRelativeTimeToNextUpdate;
+	float CurrentPlaybackGoalRelativeTimeToNextUpdate;
 };
