@@ -53,6 +53,14 @@ void UGMTK2019GameInstance::SpawnPlaybacks() {
 	}
 }
 
+void UGMTK2019GameInstance::MusicStarted() {
+	bMusicStarted = true;
+}
+
+bool UGMTK2019GameInstance::HasMusicStarted() {
+	return bMusicStarted;
+}
+
 void UGMTK2019GameInstance::Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybackTransform) {
 	if (PlayerPlaybackTransform.Num() > 0) {
 		FActorSpawnParameters SpawnInfo;
