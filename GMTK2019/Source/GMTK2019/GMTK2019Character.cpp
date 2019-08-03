@@ -12,6 +12,7 @@
 #include "PaperFlipbook.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -76,6 +77,11 @@ AGMTK2019Character::AGMTK2019Character() {
 	// Enable replication on the Sprite component so animations show up when networked
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
+
+	static ConstructorHelpers::FObjectFinder<UBlueprint> PbCharBlueprint(TEXT("Blueprint'/Game/2DSideScrollerCPP/Blueprints/Playback/PlaybackCharacterBP.PlaybackCharacterBP'"));
+	if (PbCharBlueprint.Object) {
+		PlaybackCharacterBP = (UClass*)PbCharBlueprint.Object->GeneratedClass;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -115,15 +121,14 @@ void AGMTK2019Character::UpdateAnimationToState(EAnimationState DesiredAnimation
 
 void AGMTK2019Character::BeginPlay() {
 	Super::BeginPlay();
+	TheGameInstance = Cast<UGMTK2019GameInstance>(GetGameInstance());
 }
 
 void AGMTK2019Character::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	MillisSinceLevelStart += DeltaSeconds;
-	CurrentPlaybackMillis += DeltaSeconds;
 
 	UpdateCharacter();
-	UpdatePlayback();
 }
 
 void AGMTK2019Character::AnimationDone() {
@@ -154,63 +159,25 @@ void AGMTK2019Character::ToggleRecord() {
 	} else {
 		GetWorld()->GetTimerManager().ClearTimer(RecordPlayerTimerHandle);
 		RecordPlayer();
-	}
-}
-
-void AGMTK2019Character::TogglePlayback() {
-	bIsPlaybackRunning = !bIsPlaybackRunning;
-	if (bIsPlaybackRunning) {
-		StartPlayback();
-	}
-}
-
-void AGMTK2019Character::StartPlayback() {
-	UE_LOG(SideScrollerCharacter, Warning, TEXT("startplayback"));
-	PlaybackIndex = 0;
-	CurrentPlaybackMillis = 0;
-}
-
-void AGMTK2019Character::UpdatePlayback() {
-	if (!bIsPlaybackRunning) {
-		return;
-	}
-
-	if (PlayerRecordingTransform.Num() > PlaybackIndex) {
-		FPlaybackTransformStruct PlaybackTransformStruct = PlayerRecordingTransform[PlaybackIndex];
-		if (PlaybackTransformStruct.RelativeMillisSincePlaybackStart < CurrentPlaybackMillis) {
-			if (PlayerRecordingTransform.Num() > PlaybackIndex + 1) {
-				CurrentPlaybackStartRelativeTimeToNextUpdate = PlaybackTransformStruct.RelativeMillisSincePlaybackStart;
-				CurrentPlaybackGoalRelativeTimeToNextUpdate = PlayerRecordingTransform[PlaybackIndex + 1].RelativeMillisSincePlaybackStart;
-				CurrentPlaybackStart = GetActorTransform();
-				CurrentPlaybackGoal = PlaybackTransformStruct.ActorTransform;
-			} else {
-				SetActorTransform(PlaybackTransformStruct.ActorTransform);
-			}
-			PlaybackIndex++;
+		if (TheGameInstance) {
+			TheGameInstance->AddToPlaybackMap(0, PlayerRecordingTransform);
 		}
-		if (PlaybackIndex > 0) {
-			UpdatePlaybackLerp();
-		}
-	} else {
-		UE_LOG(SideScrollerCharacter, Warning, TEXT("playback done"));
-		bIsPlaybackRunning = false;
 	}
 }
 
-void AGMTK2019Character::UpdatePlaybackLerp() {
-	FTransform NextTransform = CurrentPlaybackStart;
-
-	float LerpStart = CurrentPlaybackMillis - CurrentPlaybackStartRelativeTimeToNextUpdate;
-	float LerpEnd = CurrentPlaybackGoalRelativeTimeToNextUpdate - CurrentPlaybackStartRelativeTimeToNextUpdate;
-
-	UE_LOG(SideScrollerCharacter, Warning, TEXT("start %f"), LerpStart);
-	UE_LOG(SideScrollerCharacter, Warning, TEXT("end %f ms"), LerpEnd);
-
-	FVector NewLocation = FMath::Lerp(CurrentPlaybackStart.GetLocation(), CurrentPlaybackGoal.GetLocation(), LerpStart / LerpEnd);
-	NextTransform.SetLocation(NewLocation);
-	UE_LOG(SideScrollerCharacter, Warning, TEXT("MyCharacter's Location is %s"), *NextTransform.GetLocation().ToString());
-	SetActorTransform(NextTransform);
+void AGMTK2019Character::SpawnPlaybackCharacter() {
+	TArray<FPlaybackTransformStruct> PlayerPlaybackTransform = TheGameInstance->GetEntryInPlaybackMap(0);
+	if (PlayerPlaybackTransform.Num() > 0) {
+		FActorSpawnParameters SpawnInfo;
+		FVector StartLocation = PlayerPlaybackTransform[0].ActorTransform.GetLocation();
+		APlaybackCharacter* SpawnedActor = GetWorld()->SpawnActor<APlaybackCharacter>(PlaybackCharacterBP, StartLocation, FRotator(), SpawnInfo);
+		if (SpawnedActor) {
+			SpawnedActor->SetPlaybackTransform(PlayerPlaybackTransform);
+			SpawnedActor->TogglePlayback();
+		}
+	}
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -220,7 +187,7 @@ void AGMTK2019Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGMTK2019Character::MoveRight);
-	PlayerInputComponent->BindAction("TogglePlayback", IE_Pressed, this, &AGMTK2019Character::TogglePlayback);
+	PlayerInputComponent->BindAction("TogglePlayback", IE_Pressed, this, &AGMTK2019Character::SpawnPlaybackCharacter);
 	PlayerInputComponent->BindAction("ToggleRecord", IE_Pressed, this, &AGMTK2019Character::ToggleRecord);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGMTK2019Character::TouchStarted);
