@@ -69,6 +69,8 @@ protected:
 public:
 	AGMTK2019Character();
 
+	void ToggleRecord();
+
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -88,8 +90,6 @@ private:
 	void StartRecordingPlayer();
 
 	void RecordPlayer();
-
-	void ToggleRecord();
 
 	void SpawnPlaybackCharacter();
 
