@@ -7,6 +7,7 @@
 #include "Playback/PlaybackObject.h"
 #include "Playback/PlaybackCharacter.h"
 #include "GMTK2019GameInstance.h"
+#include "LevelInfoActor.h"
 #include "GMTK2019Character.generated.h"
 
 class UTextRenderComponent;
@@ -126,4 +127,6 @@ private:
 	bool bIsRecording = false;
 
 	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
+
+	ALevelInfoActor* LevelInfo;
 };

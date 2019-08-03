@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperFlipbookActor.h"
 #include "Runtime/Engine/Classes/Components/BoxComponent.h"
+#include "LevelInfoActor.h"
 #include "LevelFinishActor.generated.h"
 
 /**
@@ -28,9 +29,6 @@ public:
 	UFUNCTION()
 		void DoActionWhenPlayerOverlaps();
 
-	UFUNCTION()
-		void LoadPreviousLevel();
-
 private:
 	void Load(FName LevelName);
 
@@ -40,9 +38,5 @@ private:
 
 	bool bIsPlayerOverlapping;
 
-	UPROPERTY(EditAnywhere, Category = "Levelname")
-		FName NextLevelName;
-
-	UPROPERTY(EditAnywhere, Category = "Levelname")
-		FName PreviousLevelName;
+	ALevelInfoActor* LevelInfo;
 };

@@ -14,6 +14,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "LevelInfoActor.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -122,8 +123,18 @@ void AGMTK2019Character::UpdateAnimationToState(EAnimationState DesiredAnimation
 
 void AGMTK2019Character::BeginPlay() {
 	Super::BeginPlay();
+
+	TArray<AActor*> LevelInfoActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelInfoActor::StaticClass(), LevelInfoActors);
+	LevelInfo = Cast<ALevelInfoActor>(LevelInfoActors[0]);
+
 	TheGameInstance = Cast<UGMTK2019GameInstance>(GetGameInstance());
-	TheGameInstance->SpawnPlaybacks();
+
+	if (!LevelInfo->ClearPlaybacks()) {
+		TheGameInstance->SpawnPlaybacks();
+	} else {
+		TheGameInstance->ClearPlaybackMap();
+	}
 	ToggleRecord();
 }
 
@@ -201,6 +212,11 @@ void AGMTK2019Character::ResetLevel() {
 void AGMTK2019Character::PreviousLevel() {
 	if (PlayerPressPreviousLevelDelegate_OnPress.IsBound()) {
 		PlayerPressPreviousLevelDelegate_OnPress.Broadcast();
+	}
+
+	if (LevelInfo->GetPreviousLevelName() != NAME_None) {
+		TheGameInstance->RemoveEntryFromPlaybackMap(LevelInfo->GetCurrentLevelIndex() - 1);
+		UGameplayStatics::OpenLevel(GetWorld(), LevelInfo->GetPreviousLevelName());
 	}
 }
 
