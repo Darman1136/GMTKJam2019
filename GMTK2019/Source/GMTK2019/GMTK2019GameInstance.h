@@ -33,7 +33,7 @@ private:
 	void Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybackTransform);
 
 private:
-		TMap<int32, TArray<FPlaybackTransformStruct>> PlaybackMap;
+	TMap<int32, TArray<FPlaybackTransformStruct>> PlaybackMap;
 
-		TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
+	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
 };

@@ -10,7 +10,7 @@ USTRUCT()
 struct FPlaybackTransformStruct {
 	GENERATED_BODY()
 
-	UPROPERTY()
+		UPROPERTY()
 		float RelativeMillisSincePlaybackStart;
 
 	UPROPERTY()
@@ -31,11 +31,10 @@ struct FPlaybackTransformStruct {
 };
 
 /**
- * 
+ *
  */
 UCLASS()
-class GMTK2019_API UPlaybackObject : public UObject
-{
+class GMTK2019_API UPlaybackObject : public UObject {
 	GENERATED_BODY()
-	
+
 };

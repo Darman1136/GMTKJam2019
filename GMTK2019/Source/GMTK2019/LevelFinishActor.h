@@ -28,12 +28,21 @@ public:
 	UFUNCTION()
 		void DoActionWhenPlayerOverlaps();
 
+	UFUNCTION()
+		void LoadPreviousLevel();
+
+private:
+	void Load(FName LevelName);
+
 private:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* BoxComponent;
 
 	bool bIsPlayerOverlapping;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Levelname")
 		FName NextLevelName;
+
+	UPROPERTY(EditAnywhere, Category = "Levelname")
+		FName PreviousLevelName;
 };
