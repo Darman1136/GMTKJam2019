@@ -57,7 +57,7 @@ void UGMTK2019GameInstance::Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybac
 	if (PlayerPlaybackTransform.Num() > 0) {
 		FActorSpawnParameters SpawnInfo;
 		FVector StartLocation = PlayerPlaybackTransform[0].ActorTransform.GetLocation();
-		APlaybackCharacter* SpawnedActor = GetWorld()->SpawnActor<APlaybackCharacter>(PlaybackCharacterBP, StartLocation, FRotator(), SpawnInfo);
+		APlaybackCharacter* SpawnedActor = GetWorld()->SpawnActor<APlaybackCharacter>(PlaybackCharacterBP, StartLocation, FRotator(0.f, 0.f, 0.f), SpawnInfo);
 		if (SpawnedActor) {
 			SpawnedActor->SetPlaybackTransform(PlayerPlaybackTransform);
 			SpawnedActor->TogglePlayback();
