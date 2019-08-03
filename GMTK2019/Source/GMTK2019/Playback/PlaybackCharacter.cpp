@@ -3,12 +3,15 @@
 
 #include "PlaybackCharacter.h"
 #include "PaperFlipbookComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(PlaybackCharacterLog, Log, All);
 
 APlaybackCharacter::APlaybackCharacter() {
-	//
+	StepAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("StepAudioComponent"));
+	StepAudioComponent->SetupAttachment(RootComponent);
+	StepAudioComponent->bAutoActivate = false;
 }
 
 void APlaybackCharacter::Tick(float DeltaSeconds) {
@@ -39,6 +42,14 @@ void APlaybackCharacter::UpdateAnimationToState(EAnimationState DesiredAnimation
 	UPaperFlipbook* DesiredAnimation = AnimationFlipbookMap.FindRef(DesiredAnimationState);
 	if (DesiredAnimation) {
 		GetSprite()->SetFlipbook(DesiredAnimation);
+	}
+
+	if (CurrentAnimationState == EAnimationState::Anim_Run && !GetMovementComponent()->IsFalling()) {
+		if (!StepAudioComponent->IsPlaying()) {
+			StepAudioComponent->Play();
+		}
+	} else {
+		StepAudioComponent->Stop();
 	}
 }
 

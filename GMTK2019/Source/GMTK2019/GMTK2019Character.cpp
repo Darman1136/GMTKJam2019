@@ -35,6 +35,10 @@ AGMTK2019Character::AGMTK2019Character() {
 	MusicAudioComponent = CreateDefaultSubobject<UMusicAudioComponent>(TEXT("MusicAudioComponent"));
 	MusicAudioComponent->SetupAttachment(RootComponent);
 
+	StepAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("StepAudioComponent"));
+	StepAudioComponent->SetupAttachment(RootComponent);
+	StepAudioComponent->bAutoActivate = false;
+
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -122,6 +126,14 @@ void AGMTK2019Character::UpdateAnimationToState(EAnimationState DesiredAnimation
 	UPaperFlipbook* DesiredAnimation = AnimationFlipbookMap.FindRef(DesiredAnimationState);
 	if (DesiredAnimation) {
 		GetSprite()->SetFlipbook(DesiredAnimation);
+	}
+
+	if (CurrentAnimationState == EAnimationState::Anim_Run && !GetMovementComponent()->IsFalling()) {
+		if (!StepAudioComponent->IsPlaying()) {
+			StepAudioComponent->Play();
+		}
+	} else {
+		StepAudioComponent->Stop();
 	}
 }
 

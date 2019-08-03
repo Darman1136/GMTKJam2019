@@ -6,6 +6,7 @@
 #include "PaperCharacter.h"
 #include "Playback/PlaybackObject.h"
 #include "GMTK2019Enums.h"
+#include "Runtime/Engine/Classes/Components/AudioComponent.h"
 #include "PlaybackCharacter.generated.h"
 
 /**
@@ -56,4 +57,7 @@ private:
 
 	bool bIsMoving = false;
 	bool bIsMovingRight = true;
+
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* StepAudioComponent;
 };
