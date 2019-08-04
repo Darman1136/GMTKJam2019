@@ -76,6 +76,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FORCEINLINE class UMusicAudioComponent* GetMusicAudioComponent() const { return MusicAudioComponent; }
 
+	void ResetLevel();
+
+	UFUNCTION(BlueprintCallable)
+		void SetScreenBlack();
+
+public:
 	UPROPERTY(BlueprintAssignable, Category = "Animation")
 		FAnimationFinishDelegate AnimationDelegate_OnFinish;
 
@@ -97,8 +103,6 @@ private:
 	void SpawnPlaybackCharacter();
 
 	void Use();
-
-	void ResetLevel();
 
 	void PreviousLevel();
 
