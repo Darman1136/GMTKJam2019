@@ -277,6 +277,7 @@ void AGMTK2019Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AGMTK2019Character::Use);
 	PlayerInputComponent->BindAction("Reset", IE_Pressed, this, &AGMTK2019Character::ResetLevel);
 	PlayerInputComponent->BindAction("PreviousLevel", IE_Pressed, this, &AGMTK2019Character::PreviousLevel);
+	PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &AGMTK2019Character::ToggleMenu);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGMTK2019Character::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AGMTK2019Character::TouchStopped);
@@ -319,4 +320,11 @@ void AGMTK2019Character::UpdateCharacter() {
 void AGMTK2019Character::SetScreenBlack() {
 	SideViewCameraComponent->PostProcessSettings.bOverride_ColorGamma = true;
 	SideViewCameraComponent->PostProcessSettings.ColorGamma = FVector4(0.f, 0.f, 0.f, 0.f);
+}
+
+void AGMTK2019Character::ToggleMenu() {
+	bIsMenuVisible = !bIsMenuVisible;
+	if (EscapedPressedDelegate_OnPress.IsBound()) {
+		EscapedPressedDelegate_OnPress.Broadcast(bIsMenuVisible);
+	}
 }
