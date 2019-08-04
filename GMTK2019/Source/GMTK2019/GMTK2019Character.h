@@ -74,12 +74,17 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	UFUNCTION(BlueprintCallable)
-		FORCEINLINE class UMusicAudioComponent* GetMusicAudioComponent() const { return MusicAudioComponent; }
+		FORCEINLINE class UAudioComponent* GetMusicAudioComponent() const { return MusicAudioComponent; }
 
 	void ResetLevel();
 
 	UFUNCTION(BlueprintCallable)
 		void SetScreenBlack();
+
+	void ChangeLevel(FName LevelName);
+
+	UFUNCTION()
+		void ActualChangeLevel(FName LevelName);
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Animation")
@@ -132,8 +137,17 @@ private:
 	ALevelInfoActor* LevelInfo;
 
 	UPROPERTY(EditAnywhere)
-		UMusicAudioComponent* MusicAudioComponent;
+		UAudioComponent* MusicAudioComponent;
 
 	UPROPERTY(EditAnywhere)
 		UAudioComponent* StepAudioComponent;
+
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* WhooshAudioComponent;
+
+	UPROPERTY(EditAnywhere)
+		float MusicFadeDelay = .1f;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* MusicSoundCue;
 };

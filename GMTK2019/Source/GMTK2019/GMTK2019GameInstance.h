@@ -30,11 +30,10 @@ public:
 
 	void SpawnPlaybacks();
 
-	UFUNCTION(BlueprintCallable)
-		void MusicStarted();
+	void SetMusicOffset(float NewMusicOffset);
 
 	UFUNCTION(BlueprintPure)
-		bool HasMusicStarted();
+		float GetMusicOffset();
 
 private:
 	void Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybackTransform);
@@ -44,5 +43,5 @@ private:
 
 	TSubclassOf<class APlaybackCharacter> PlaybackCharacterBP;
 
-	bool bMusicStarted = false;
+	float MusicOffset = 0.f;
 };

@@ -53,12 +53,12 @@ void UGMTK2019GameInstance::SpawnPlaybacks() {
 	}
 }
 
-void UGMTK2019GameInstance::MusicStarted() {
-	bMusicStarted = true;
+void UGMTK2019GameInstance::SetMusicOffset(float NewMusicOffset) {
+	MusicOffset = NewMusicOffset;
 }
 
-bool UGMTK2019GameInstance::HasMusicStarted() {
-	return bMusicStarted;
+float UGMTK2019GameInstance::GetMusicOffset() {
+	return MusicOffset;
 }
 
 void UGMTK2019GameInstance::Spawn(TArray<FPlaybackTransformStruct> PlayerPlaybackTransform) {
