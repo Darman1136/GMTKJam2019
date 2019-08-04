@@ -28,7 +28,9 @@ public:
 
 	void SpawnPlaybacks();
 
-	void SetMusicOffset(float NewMusicOffset);
+	void AddMusicOffset(float ToAddMusicOffset);
+
+	void ResetMusicOffset();
 
 	UFUNCTION(BlueprintPure)
 		float GetMusicOffset();

@@ -165,7 +165,7 @@ void AGMTK2019Character::BeginPlay() {
 void AGMTK2019Character::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	MillisSinceLevelStart += DeltaSeconds;
-	// TheGameInstance->AddMusicOffset(DeltaSeconds);
+	TheGameInstance->AddMusicOffset(DeltaSeconds);
 
 	UpdateCharacter();
 }
@@ -248,10 +248,12 @@ void AGMTK2019Character::PreviousLevel() {
 
 void AGMTK2019Character::ChangeLevel(FName LevelName) {
 	WhooshAudioComponent->Play();
-	UE_LOG(LogTemp, Error, TEXT("dur: %f"), MusicSoundCue->Duration);
-	float NextStart = FMath::RandRange(0.f, MusicSoundCue->Duration - 30.f);
-	UE_LOG(LogTemp, Error, TEXT("next: %f"), NextStart);
-	TheGameInstance->SetMusicOffset(NextStart);
+	float WantedOffset = TheGameInstance->GetMusicOffset();
+
+	if (WantedOffset > MusicSoundCue->Duration - 10.f) {
+		TheGameInstance->ResetMusicOffset();
+	}
+
 	MusicAudioComponent->FadeOut(MusicFadeDelay, 0.f);
 
 	FTimerDelegate TimerDelegate;
@@ -272,8 +274,10 @@ void AGMTK2019Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGMTK2019Character::MoveRight);
+	/*
 	PlayerInputComponent->BindAction("TogglePlayback", IE_Pressed, this, &AGMTK2019Character::SpawnPlaybackCharacter);
 	PlayerInputComponent->BindAction("ToggleRecord", IE_Pressed, this, &AGMTK2019Character::ToggleRecord);
+	*/
 	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AGMTK2019Character::Use);
 	PlayerInputComponent->BindAction("Reset", IE_Pressed, this, &AGMTK2019Character::ResetLevel);
 	PlayerInputComponent->BindAction("PreviousLevel", IE_Pressed, this, &AGMTK2019Character::PreviousLevel);
