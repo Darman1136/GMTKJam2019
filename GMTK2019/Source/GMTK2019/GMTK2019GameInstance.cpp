@@ -48,8 +48,12 @@ void UGMTK2019GameInstance::SpawnPlaybacks() {
 	}
 }
 
-void UGMTK2019GameInstance::SetMusicOffset(float NewMusicOffset) {
-	MusicOffset = NewMusicOffset;
+void UGMTK2019GameInstance::AddMusicOffset(float ToAddMusicOffset) {
+	MusicOffset += ToAddMusicOffset;
+}
+
+void UGMTK2019GameInstance::ResetMusicOffset() {
+	MusicOffset = 0.f;
 }
 
 float UGMTK2019GameInstance::GetMusicOffset() {
