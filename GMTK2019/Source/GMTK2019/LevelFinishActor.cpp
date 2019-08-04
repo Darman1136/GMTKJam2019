@@ -12,6 +12,10 @@ ALevelFinishActor::ALevelFinishActor() : Super() {
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxComponent->SetRelativeTransform(FTransform());
 	BoxComponent->SetupAttachment(RootComponent);
+
+	SuccessAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SuccessAudioComponent"));
+	SuccessAudioComponent->SetupAttachment(RootComponent);
+	SuccessAudioComponent->bAutoActivate = false;
 }
 
 void ALevelFinishActor::BeginPlay() {
@@ -23,6 +27,7 @@ void ALevelFinishActor::BeginPlay() {
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ALevelFinishActor::OnBeginOverlap);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ALevelFinishActor::OnEndOverlap);
+	SuccessAudioComponent->OnAudioFinished.AddDynamic(this, &ALevelFinishActor::TriggerFinish);
 
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (PlayerCharacter && PlayerCharacter->IsA(AGMTK2019Character::StaticClass())) {
@@ -51,7 +56,11 @@ void ALevelFinishActor::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor
 
 void ALevelFinishActor::DoActionWhenPlayerOverlaps() {
 	if (bIsPlayerOverlapping) {
-		Load(LevelInfo->GetNextLevelName());
+		if (SuccessAudioComponent->Sound) {
+			SuccessAudioComponent->Play();
+		} else {
+			Load(LevelInfo->GetNextLevelName());
+		}
 	}
 }
 
@@ -65,4 +74,8 @@ void ALevelFinishActor::Load(FName LevelName) {
 		Cast<AGMTK2019Character>(PlayerCharacter)->ToggleRecord();
 	}
 	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
+}
+
+void ALevelFinishActor::TriggerFinish() {
+	Load(LevelInfo->GetNextLevelName());
 }
