@@ -15,8 +15,8 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "LevelInfoActor.h"
-#include "Audio/MusicAudioComponent.h"
 #include "Runtime/Engine/Classes/Components/PostProcessComponent.h"
+#include "Runtime/Engine/Classes/Sound/SoundBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -33,12 +33,17 @@ AGMTK2019Character::AGMTK2019Character() {
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(40.0f);
 
-	MusicAudioComponent = CreateDefaultSubobject<UMusicAudioComponent>(TEXT("MusicAudioComponent"));
+	MusicAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TheMusicAudioComponent"));
 	MusicAudioComponent->SetupAttachment(RootComponent);
+	MusicAudioComponent->bAutoActivate = false;
 
 	StepAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("StepAudioComponent"));
 	StepAudioComponent->SetupAttachment(RootComponent);
 	StepAudioComponent->bAutoActivate = false;
+
+	WhooshAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("WhooshAudioComponent"));
+	WhooshAudioComponent->SetupAttachment(RootComponent);
+	WhooshAudioComponent->bAutoActivate = false;
 
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -147,6 +152,8 @@ void AGMTK2019Character::BeginPlay() {
 
 	TheGameInstance = Cast<UGMTK2019GameInstance>(GetGameInstance());
 
+	MusicAudioComponent->FadeIn(MusicFadeDelay, 1.f, TheGameInstance->GetMusicOffset());
+
 	if (!LevelInfo->ClearPlaybacks()) {
 		TheGameInstance->SpawnPlaybacks();
 	} else {
@@ -158,6 +165,7 @@ void AGMTK2019Character::BeginPlay() {
 void AGMTK2019Character::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 	MillisSinceLevelStart += DeltaSeconds;
+	// TheGameInstance->AddMusicOffset(DeltaSeconds);
 
 	UpdateCharacter();
 }
@@ -223,7 +231,8 @@ void AGMTK2019Character::Use() {
 void AGMTK2019Character::ResetLevel() {
 	FString LevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
 	UE_LOG(SideScrollerCharacter, Log, TEXT("Reset %s"), *LevelName);
-	UGameplayStatics::OpenLevel(GetWorld(), FName(*LevelName));
+	ChangeLevel(FName(*LevelName));
+
 }
 
 void AGMTK2019Character::PreviousLevel() {
@@ -233,8 +242,26 @@ void AGMTK2019Character::PreviousLevel() {
 
 	if (LevelInfo->GetPreviousLevelName() != NAME_None) {
 		TheGameInstance->RemoveEntryFromPlaybackMap(LevelInfo->GetCurrentLevelIndex() - 1);
-		UGameplayStatics::OpenLevel(GetWorld(), LevelInfo->GetPreviousLevelName());
+		ChangeLevel(LevelInfo->GetPreviousLevelName());
 	}
+}
+
+void AGMTK2019Character::ChangeLevel(FName LevelName) {
+	WhooshAudioComponent->Play();
+	UE_LOG(LogTemp, Error, TEXT("dur: %f"), MusicSoundCue->Duration);
+	float NextStart = FMath::RandRange(0.f, MusicSoundCue->Duration - 30.f);
+	UE_LOG(LogTemp, Error, TEXT("next: %f"), NextStart);
+	TheGameInstance->SetMusicOffset(NextStart);
+	MusicAudioComponent->FadeOut(MusicFadeDelay, 0.f);
+
+	FTimerDelegate TimerDelegate;
+	FTimerHandle DelayHandle;
+	TimerDelegate.BindUFunction(this, FName("ActualChangeLevel"), LevelName);
+	GetWorld()->GetTimerManager().SetTimer(DelayHandle, TimerDelegate, MusicFadeDelay, false);
+}
+
+void AGMTK2019Character::ActualChangeLevel(FName LevelName) {
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
 //////////////////////////////////////////////////////////////////////////

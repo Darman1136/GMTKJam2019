@@ -15,4 +15,6 @@ class GMTK2019_API UMusicAudioComponent : public UAudioComponent
 	GENERATED_BODY()
 
 		UMusicAudioComponent();
+
+	virtual void BeginPlay() override;
 };

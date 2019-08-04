@@ -7,4 +7,17 @@ UMusicAudioComponent::UMusicAudioComponent() : Super() {
 	bIgnoreForFlushing = true;
 	bAutoActivate = false;
 	bStopWhenOwnerDestroyed = false;
+	bIsUISound = true;
+	bIsMusic = true;
+}
+
+
+void UMusicAudioComponent::BeginPlay() {
+	Super::BeginPlay();
+
+	bIgnoreForFlushing = true;
+	bAutoActivate = false;
+	bStopWhenOwnerDestroyed = false;
+	bIsUISound = true;
+	bIsMusic = true;
 }
