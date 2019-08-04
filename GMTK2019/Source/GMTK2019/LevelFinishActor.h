@@ -33,10 +33,13 @@ public:
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Level")
-	FLevelReadyToFinish LevelReadyToFinish_OnChange;
+		FLevelReadyToFinish LevelReadyToFinish_OnChange;
 
 private:
 	void Load(FName LevelName);
+
+	UFUNCTION()
+		void TriggerFinish();
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -45,4 +48,7 @@ private:
 	bool bIsPlayerOverlapping;
 
 	ALevelInfoActor* LevelInfo;
+
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* SuccessAudioComponent;
 };
