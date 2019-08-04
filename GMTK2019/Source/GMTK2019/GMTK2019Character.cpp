@@ -199,7 +199,7 @@ void AGMTK2019Character::ToggleRecord() {
 		GetWorld()->GetTimerManager().ClearTimer(RecordPlayerTimerHandle);
 		RecordPlayer();
 		if (TheGameInstance) {
-			TheGameInstance->AddToPlaybackMap(PlayerRecordingTransform);
+			TheGameInstance->AddToPlaybackMap(LevelInfo->GetCurrentLevelIndex(), PlayerRecordingTransform);
 		}
 	}
 }

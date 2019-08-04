@@ -19,11 +19,6 @@ void UGMTK2019GameInstance::AddToPlaybackMap(int32 index, TArray<FPlaybackTransf
 	UE_LOG(GMTK2019GameInstanceLog, Log, TEXT("Added entry with id %d"), index);
 }
 
-void UGMTK2019GameInstance::AddToPlaybackMap(TArray<FPlaybackTransformStruct> NewPlaybackTransformStructArray) {
-	UE_LOG(GMTK2019GameInstanceLog, Log, TEXT("Added entry with id %d"), PlaybackMap.Num());
-	PlaybackMap.Add(PlaybackMap.Num(), NewPlaybackTransformStructArray);
-}
-
 TArray<FPlaybackTransformStruct> UGMTK2019GameInstance::GetEntryInPlaybackMap(int32 index) {
 	if (PlaybackMap.Contains(index)) {
 		UE_LOG(GMTK2019GameInstanceLog, Log, TEXT("Entry with id %d returned"), index);

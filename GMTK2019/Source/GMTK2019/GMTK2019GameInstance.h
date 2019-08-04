@@ -19,8 +19,6 @@ class GMTK2019_API UGMTK2019GameInstance : public UGameInstance {
 public:
 	void AddToPlaybackMap(int32 index, TArray<FPlaybackTransformStruct> NewPlaybackTransformStructArray);
 
-	void AddToPlaybackMap(TArray<FPlaybackTransformStruct> NewPlaybackTransformStructArray);
-
 	TArray<FPlaybackTransformStruct> GetEntryInPlaybackMap(int32 index);
 
 	void RemoveEntryFromPlaybackMap(int32 index);
