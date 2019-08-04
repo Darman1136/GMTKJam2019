@@ -16,6 +16,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "LevelInfoActor.h"
 #include "Audio/MusicAudioComponent.h"
+#include "Runtime/Engine/Classes/Components/PostProcessComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -286,4 +287,9 @@ void AGMTK2019Character::UpdateCharacter() {
 			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 		}
 	}
+}
+
+void AGMTK2019Character::SetScreenBlack() {
+	SideViewCameraComponent->PostProcessSettings.bOverride_ColorGamma = true;
+	SideViewCameraComponent->PostProcessSettings.ColorGamma = FVector4(0.f, 0.f, 0.f, 0.f);
 }
